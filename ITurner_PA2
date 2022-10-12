@@ -1,0 +1,152 @@
+/*************
+ **  PA1_ITurner
+ **  Isaiah Turner
+ **  9/22/2022
+ **  iturner@umbc.edu
+ **  frogger moves around, bouncing off top and bottom
+ **  and wrapping around left and right edges
+ */
+//variables
+//remember to AMKE
+int froggerX = 0;
+int froggerY = 0;
+float xDelta = 64;
+float yDelta = 64;
+float movespeed = 2;
+int yBoundNeg = 3; //boundaries on the x and y
+int yBoundPos = 512;
+int xBoundNeg = -5;
+int xBoundPos = 576;
+int health = 10;
+final int MAX_HEALTH = 10;
+float itemRandX;
+float itemRandY;
+float baddieRandX;
+float baddieRandY;
+
+/*
+ * setup - prepares sketch environment
+ */
+void setup() {
+  size(576, 576);
+  placeGoodie();  //runs only once
+  placeBaddie();
+}
+
+/*
+ * draw - draw frogger and move, based on user input
+ */
+void draw() {
+  background(0);
+  drawGoodie();
+  drawBaddie();
+  //move frogger up, down, left, right
+  drawFrogger();
+  //check bounds and keep frogger from jumping off top/bottom
+  restrictFrogger();
+  //wrap right to left, left to right
+  makeFroggerWrap();
+
+  
+  fill(255);
+  textSize(50);
+  text("Health: " + str(health), 40, 60);
+  text(str(froggerX) +" " + str(froggerY),100,100);
+  
+}
+
+/*
+ * drawFrogger - draws frogger at the given x, y
+ */
+void drawFrogger() {
+  if (keyPressed) {
+    if (key =='w') {
+      froggerY-=movespeed;
+    }
+    if (key =='s') {
+      froggerY+=movespeed;
+    }
+    if (key =='a') {
+      froggerX-=movespeed;
+    }
+    if (key =='d') {
+      froggerX+=movespeed;
+    }
+  }
+  fill(0, 255, 0);
+  rect(froggerX, froggerY, 64, 64);
+  rect(froggerX+10, froggerY+20, 40, 40);
+  rect(froggerX+10, froggerY+20, 40, 40);
+  rect(froggerX-10, froggerY+20, 40, 20);
+}
+
+//restrictFrogger - do not advance frogger when hitting top/bottom
+
+void restrictFrogger() {
+  if (froggerY < yBoundNeg) {
+    froggerY += 5;
+  }
+
+  if (froggerY > yBoundPos) {
+    froggerY -= 5;
+  }
+}
+/*
+ * makeFroggerWrap - puts frogger on left when it reaches right,
+ * right when left
+ */
+void makeFroggerWrap() {
+  if (froggerX < xBoundNeg) {
+    froggerX = 576;   //if we reach the left, spawn frogger on right
+  }
+  if (froggerX > xBoundPos) { //if we reach right, spawn frogger left
+    froggerX = 0;
+  }
+}
+
+void placeGoodie() {
+  itemRandX = random(0, 576); //selects a random position
+  itemRandY = random(0, 576);
+  itemRandX = round(itemRandX); //rounding for precise values
+  itemRandY = round(itemRandY);
+}
+
+
+void drawGoodie() {
+  fill(0, 225, 255);
+  rect(itemRandX, itemRandY, 64, 64);  //goodie is assigned random position
+  text(str(itemRandX) +" " + str(itemRandY),100,400);
+  if ((froggerX == itemRandX) && (froggerY ==itemRandY)) {
+    health++;
+    noFill();
+  }
+}
+
+
+//placeBaddie()essentially has the same logic as placeGoodie()
+void placeBaddie() {
+  baddieRandX = random(0, 576);
+  baddieRandY = random(0, 576);
+  baddieRandX = round(baddieRandX);
+  baddieRandY= round(baddieRandY);
+}
+
+void drawBaddie() {
+  fill(255, 0, 0);
+  rect(baddieRandX, baddieRandY, 64, 64);
+  //text(str(baddieRandX) +" " + str(baddieRandY),200,200);
+  if ((froggerX == baddieRandX) && (froggerY == baddieRandY)) {
+    health--;
+    noFill();
+    print("run");
+  }
+}
+
+
+
+
+
+
+
+
+
