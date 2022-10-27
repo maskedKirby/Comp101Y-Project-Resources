@@ -1,0 +1,249 @@
+/*************
+ **  PA3_ITurner.pde
+ **  Isaiah Turner
+ **  10/22/2022
+ **  iturner@umbc.edu
+ **  frogger moves around, bouncing off top and bottom
+ **  and wrapping around left and right edges. If frogger hits a blue square, health is gained. The opposite occurs if a red square is touched
+ */
+//variables
+int froggerX;
+int froggerY;
+final int FROGGER_SIZE = 64;
+float xDelta = FROGGER_SIZE;
+float yDelta = FROGGER_SIZE;
+int yBoundNeg = 3;
+int yBoundPos = 768;
+int xBoundNeg = -5;
+int xBoundPos = 576;
+int health = 10;
+float itemRandX;
+float itemRandY;
+float baddieRandX;
+float baddieRandY;
+final int NUM_GOODIES = 3;
+final int NUM_BADDIES = 4;
+final int ENEMY_SPEED = 8;
+int [] itemPosX;
+int [] itemPosY;
+int [] baddiePosX;
+int [] baddiePosY;
+boolean froggerIsHurt = false;
+boolean hasCollectedGoodie = false;
+
+/*
+ * setup - prepares sketch environment
+ */
+void setup() {
+  size(576, 768); //width and height
+  rectMode(CENTER);
+
+  itemPosX = new int [width];
+  itemPosY = new int [height];
+
+  baddiePosX = new int [width+width]; //the baddies will spawn at the right side
+  baddiePosY = new int [height];
+
+  //move player to the middle
+  froggerX = 320;
+
+  //puts player at the bottom of the sketch
+  froggerY = 704;
+
+
+  placeGoodies();
+  placeBaddies();
+}
+
+
+void keyPressed() {
+  //up
+  if (key =='w') {
+    froggerY -= yDelta;
+  }
+  //down
+  if (key =='s') {
+    froggerY += yDelta;
+  }
+  //left
+  if (key =='a') {
+    froggerX -= xDelta;
+  }
+  //right
+  if (key =='d') {
+    froggerX += xDelta;
+  }
+}
+/*
+ * draw - draw frogger and move, based on user input
+ */
+void draw() {
+  background(0);
+  drawArena();
+  //required functions:
+  drawGoodies();
+  drawBaddies();
+  //move frogger up, down, left, right
+  drawFrogger();
+  //check bounds and keep frogger from jumping off top/bottom
+  restrictFrogger();
+  //wrap right to left, left to right
+  makeFroggerWrap();
+  moveBaddies();
+  //draws a heads up display that shows player health
+  froggerHUD();
+}
+
+/*
+ * drawFrogger - draws frogger at the given x, y
+ */
+void drawFrogger() {
+  int spacing = 20;
+  fill(0, 255, 0);
+
+  //draws the main torso which is a rect
+  rect(froggerX, froggerY, FROGGER_SIZE, FROGGER_SIZE);
+
+
+  //draws the eyes
+  fill(255);
+  circle(froggerX-spacing, froggerY-spacing, 40);
+  circle(froggerX+spacing, froggerY-spacing, 40);
+
+  //draws the pupils
+  fill(0);
+  circle(froggerX+spacing, froggerY-spacing, 10);
+  circle(froggerX-spacing, froggerY-spacing, 10);
+}
+
+/*
+*
+ *restrictFrogger() - do not advance frogger when hitting top/bottom
+ *
+ */
+void restrictFrogger() {
+  if (froggerY < yBoundNeg) {
+    froggerY += FROGGER_SIZE;
+  }
+
+  if (froggerY > yBoundPos) {
+    froggerY -= FROGGER_SIZE;
+  }
+}
+/*
+ * makeFroggerWrap - puts frogger on left when it reaches right,
+ * right when left
+ */
+void makeFroggerWrap() {
+  if (froggerX < xBoundNeg) { //if we reach the left, spawn frogger on right
+    froggerX = 576;
+  }
+  if (froggerX > xBoundPos) { //if we reach right, spawn frogger on left
+    froggerX = 0;
+  }
+}
+
+void placeGoodies() {
+
+  for (int i = 0; i<NUM_GOODIES; i++) { //run through a list of all x coords and pick random coord.
+    itemPosX[i] = int(random(FROGGER_SIZE, width));
+    //aligns the goodie's x coordinates to be a multiple of 64
+    itemPosX[i] -= itemPosX[i]%64;
+  }
+
+  for (int i = 0; i<NUM_GOODIES; i++) {
+    itemPosY[i] = int(random(FROGGER_SIZE, height-64));
+    //aligns the goodie's y coordinates to be a multiple of 64
+    itemPosY[i] -= itemPosY[i]%64;
+  }
+}
+
+
+void placeBaddies() {
+
+  for (int i = 0; i<NUM_BADDIES; i++) {
+    //selects a random int between FROGGER_SIZE and the end of the screen
+    baddiePosX[i] = int(random(FROGGER_SIZE, width));
+    //aligns the baddie coordinate X to be a multiple of 64
+    baddiePosX[i] -= baddiePosX[i]%64;
+  }
+
+  for (int i = 0; i<NUM_BADDIES; i++) {
+    //selects a random int between FROGGER_SIZE and the frogger height, but with a difference of FROGGER_SIZE
+    baddiePosY[i] = int(random(FROGGER_SIZE, height-FROGGER_SIZE));
+    baddiePosY[i] -= baddiePosY[i]%64;
+  }
+}
+
+
+
+
+void drawGoodies() {
+
+  for (int i = 0; i<NUM_GOODIES; i++) {  //creates i amount of goodies
+    fill(0, 180, 200);
+    rect(itemPosX[i], itemPosY[i], FROGGER_SIZE, FROGGER_SIZE);
+    //if frogger positiion is the same as item position and a goodie has not been touched yet, increase health
+    if ((froggerX == itemPosX[i]) && (froggerY == itemPosY[i]) && !hasCollectedGoodie) {
+      health++;
+      itemPosX[i] = -1000;  //move coordinates off the screen
+      itemPosY[i] = -1000;
+      hasCollectedGoodie = true;
+    }
+  }
+  hasCollectedGoodie = false;  //resetting canCollectgoodie to its default value. This allows for the if statement to run again
+}
+
+//placeBaddie()essentially has the same logic as placeGoodie()
+
+void drawBaddies() {
+
+  for (int i = 0; i<NUM_BADDIES; i++) {
+    fill(255, 0, 0);
+    rect(baddiePosX[i], baddiePosY[i], FROGGER_SIZE, FROGGER_SIZE);
+    if ((froggerX == baddiePosX[i]) && (froggerY == baddiePosY[i])) {   //if frogger coordinates are the same as baddie coordinates, then frogger is hurt and decrease health
+      health -= 1;
+    }
+  }
+}
+
+
+void moveBaddies() {
+
+  int rand = int(random(64, 640));
+
+  for (int i=0; i<NUM_BADDIES; i++) {
+    baddiePosX[i]-=ENEMY_SPEED;
+    //when we reach the end of the screen, reset y coordinate but this time at a random position
+    if (baddiePosX[i]<-width) {
+      baddiePosX[i] = width;
+      baddiePosY[i] = height-rand;
+      baddiePosY[i] -= baddiePosY[i]%64;
+    }
+  }
+}
+
+
+void drawArena() {
+
+  fill(0, 0, 200);
+  rect(width-576, 0, 10, 10000);
+  rect(576, 0, 10, 10000);
+}
+
+
+void froggerHUD() {
+  fill(255);
+  textSize(25);
+  text("Health: " + str(health), 40, 60);
+
+  if (health<6) {
+    fill(200, 100, 10);
+    text("Health: " + str(health), 40, 60);
+  }
+
+  if (health<2)
+  {
+    fill(255, 255, 255);
+  }
+}
