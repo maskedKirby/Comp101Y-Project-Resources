@@ -1,0 +1,29 @@
+//draw 4 squares 1 pixel apart from each other
+int x = 288;
+int y = 288;
+final int SIZE = 30;
+int SPACING = 16;
+int delta = 1;
+int [] xPos = {x-SPACING,x-SPACING,x+SPACING,x+SPACING}; //each x value is
+int [] yPos = {y+SPACING,y-SPACING,y-SPACING,y+SPACING};
+float opacity = 220.2;
+
+void setup(){
+ size(576,576);
+ 
+  noStroke();
+}
+
+void draw(){
+
+background(0);
+
+for(int i=0; i<4;i++){
+ rect(xPos[i],yPos[i],SIZE,SIZE);
+ fill(255,opacity);
+}
+xPos [0] += delta;
+xPos [1] -= delta;
+yPos [2] -=delta;
+yPos [3] += delta;
+opacity-=2.3;
