@@ -1,0 +1,35 @@
+/*
+Isaiah Turner
+Desc: a function that makes a loading bar. It is meant to be used in the semester project
+
+*/
+
+
+int barDelta = 2;
+int barWidth = 5;
+int barHeight = 10;
+
+void setup(){
+size(500,500);
+
+}
+
+void draw(){
+background(0);
+loadingBar();  
+}
+
+void loadingBar(){
+
+fill(255);
+rect(100,100,width-200,10);
+fill(10,100,255);
+rect(100,100,barWidth,barHeight);
+
+barWidth += barDelta;
+
+if(barWidth<0 || barWidth>width-200){
+  barDelta*=-1; //like -= and +=, *= is just shorthand for yD = yD * -1, and * is multiplication!
+}
+
+}
