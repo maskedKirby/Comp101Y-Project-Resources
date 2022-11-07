@@ -30,6 +30,9 @@ int [] baddiePosX;
 int [] baddiePosY;
 boolean froggerIsHurt = false;
 boolean hasCollectedGoodie = false;
+int score = 0;
+int scoreIncrease = 250;
+int count = 0;
 
 /*
  * setup - prepares sketch environment
@@ -79,8 +82,11 @@ void keyPressed() {
  */
 void draw() {
   background(0);
+  
   drawArena();
   //required functions:
+  //draws a heads up display that shows player health
+  froggerHUD();
   drawGoodies();
   drawBaddies();
   //move frogger up, down, left, right
@@ -90,8 +96,8 @@ void draw() {
   //wrap right to left, left to right
   makeFroggerWrap();
   moveBaddies();
-  //draws a heads up display that shows player health
-  froggerHUD();
+  println(froggerX,froggerY);  
+
 }
 
 /*
@@ -189,6 +195,8 @@ void drawGoodies() {
       itemPosX[i] = -1000;  //move coordinates off the screen
       itemPosY[i] = -1000;
       hasCollectedGoodie = true;
+      score+=scoreIncrease;
+      count++;
     }
   }
   hasCollectedGoodie = false;  //resetting canCollectgoodie to its default value. This allows for the if statement to run again
@@ -236,7 +244,8 @@ void froggerHUD() {
   fill(255);
   textSize(25);
   text("Health: " + str(health), 40, 60);
-
+  text("Score: " + str(score),450,60);
+  
   if (health<6) {
     fill(200, 100, 10);
     text("Health: " + str(health), 40, 60);
@@ -246,4 +255,11 @@ void froggerHUD() {
   {
     fill(255, 255, 255);
   }
+
+  if(count>2){//if we run into all the goodies, we draw the prize
+    //adding 160 gets us back to multiples of FROGGER_SIZE
+    rect(width/2+160,64,FROGGER_SIZE,FROGGER_SIZE); 
+  }
+
+
 }
