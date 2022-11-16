@@ -1,0 +1,81 @@
+/*
+MainGameFile.pde
+Isaiah Turner, Mahad Osman, Chiji Ebenezar, Cameron 
+Desc: main game file for the game, all methods developed should be integrated here.
+*/
+
+enum GameScreen {  //controles the game state
+TITLE, WORLD, DORMS, LIBRARY, COMMONS,RESULTS;
+}
+GameScreen g_state = GameScreen.TITLE;
+int image_index = 0;
+boolean gameHasStarted = false;
+
+
+
+
+
+void setup(){   //set the screen size
+ size(1000,1000);
+ 
+}
+
+
+PImage screen;
+
+
+void draw(){
+background(0);
+gameManager();
+HUDManager();
+}
+
+
+void gameManager(){
+   //if the mouse is over the start button and button is pressed, game state is WORLD
+  // if game state is WORLD, the image in the center of the screen becomes the campus map
+  // etc.....
+  if(g_state == GameScreen.TITLE) {
+      screen = loadImage("img_titleScreen.png");
+      image(screen,0.0,10.0);   
+   }
+  if(g_state == GameScreen.WORLD) {
+      screen = loadImage("img_WorldMap.png");
+      image(screen,0.0,10.0);   
+   }
+   if(g_state == GameScreen.COMMONS) {
+      screen = loadImage("img_Commons.png");
+      image(screen,0.0,-300.0);   
+   }
+  if(g_state == GameScreen.LIBRARY) {
+      screen = loadImage("img_library.png");
+      image(screen,0.0,10.0);   
+   }
+   if(g_state == GameScreen.DORMS) {
+      screen = loadImage("img_dorms_bedroom.png");
+      image(screen,200.0,200.0);   
+   }
+  
+   if(g_state == GameScreen.RESULTS) {
+      screen = loadImage("img_Results");
+      image(screen,0.0,10.0);   
+   }
+  
+}
+
+
+void playerManager(){
+
+}
+
+void HUDManager(){
+//drawHUD();
+
+}
+
+void drawHUD() { //Mahad's drawLine() but modified
+  fill(0);
+  stroke(255);
+  rect(0,0,200,1000);
+  rect(width-200,0,200,1000); 
+}
