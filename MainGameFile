@@ -23,8 +23,8 @@ boolean thresh1Met; //thrsholds that when crossed trigger the next unit of count
 boolean thresh2Met;
 boolean thresh3Met;
 
-
-
+int timeBlockY = 120;
+int [] tickY = {120, 240, 360, 480, 600, 720};
 
 
 //button object declarations
@@ -61,7 +61,6 @@ void setup(){   //set the screen size
  b_dorm = new Button(250,400,10,10," ",23,255,0,0,0);
  }
 
- 
 
 void draw(){
 background(0);
@@ -69,18 +68,19 @@ gameManager();
 drawHUD();
 b_start.Render();
 b_start.update();
- 
-}
 
+}
 
 
 void gameManager(){
 
+  
   if(b_start.isClicked()){
   g_state = GameScreen.WORLD;
   gameHasStarted = true;
   b_start.setXPosition(-1000);
-  TimeSystem();
+  
+  
   }
   
   
@@ -135,7 +135,10 @@ void TimeSystem(){
   thresh3Met = false;
   
   minutes++;
-  if(minutes>300 && !thresh1Met){
+  timeBlockY+=2; 
+  
+  
+  if(minutes>30 && !thresh1Met){
     minutes = 0;
     hours+=1;
     thresh1Met = true;
@@ -154,8 +157,7 @@ void TimeSystem(){
   }
   
 
-  textSize(30);
-  text("Hours: " + str(hours) + " " + "Day: " + str(days)+" " + "Weeks: " + str(week),100,500);
+  
 
 }
 
@@ -166,7 +168,6 @@ void playerManager(){
 void drawHUD(){
   
   //display logistics
-  
   int HUD_X = 230;
   int hudWidth = 100;
   int hudHeight = 50;
@@ -186,12 +187,11 @@ void drawHUD(){
   
   
  //instantiate buttons for location
- 
- 
   if(gameHasStarted){
   //draw HUD sprite
    HUD_image = loadImage("img_HUD.png");
   image(HUD_image,0,0);
+  TimeSystem();
   
   //draws player options
   b_study.Render();
@@ -204,6 +204,8 @@ void drawHUD(){
   b_hangout.update();
   b_back.Render();
   b_back.update();
+  
+  Planner();
   
  //draw locations
  
@@ -221,7 +223,11 @@ void drawHUD(){
  rect(100,200,100,400); 
  fill(255);
  text("STATS:-\n-----\n" + " Health:"+str(health) +"%" +"\n"+ "Money:" + "$" +str(money),100,300);
-  
+ textSize(30);
+ text("Hours: " + str(hours) + " " + "Day: " + str(days)+" " + "Weeks: " + str(week),300,80);
+ 
+ println(minutes);
+ 
   }
 
 //if any of the buttons is clicked, set the x of all of them to -1000
@@ -243,3 +249,28 @@ if(b_back.isClicked()) {g_state = GameScreen.WORLD;}
 
 
 }
+
+void Planner(){
+
+
+//draw the planner page  
+fill(255); 
+rect(880,120,100,800);
+fill(0,255,0);
+rect(880,timeBlockY,100,15); //timeBlockY is incremented in TimeSystem()
+text("                     SCHED:  ",780,80);
+for(int i=0; i<tickY.length; i++){ //draw the ticks
+    fill(0);
+    rect(880,tickY[i],25,15);
+}
+
+
+
+
+
+
+
+
+}
+
+
