@@ -4,78 +4,242 @@ Isaiah Turner, Mahad Osman, Chiji Ebenezar, Cameron
 Desc: main game file for the game, all methods developed should be integrated here.
 */
 
-enum GameScreen {  //controles the game state
-TITLE, WORLD, DORMS, LIBRARY, COMMONS,RESULTS;
+enum GameScreen {  //controls the game state
+TITLE, WORLD, DORMS, LIBRARY, COMMONS,RAC,RESULTS;
 }
-GameScreen g_state = GameScreen.TITLE;
-int image_index = 0;
+GameScreen g_state = GameScreen.TITLE; //holds the game state
 boolean gameHasStarted = false;
+PImage screen; //variable that holds the center image
+PImage HUD_image; //hold the HUD image
+PFont font;
+String currentLocation  = " ";
+
+
+int minutes = 0;
+int hours = 0;
+int days = 0;
+int week = 0;
+boolean thresh1Met; //thrsholds that when crossed trigger the next unit of counting
+boolean thresh2Met;
+boolean thresh3Met;
 
 
 
+
+
+//button object declarations
+ 
+
+Button b_start;
+Button b_back;
+
+Button b_study;
+Button b_eat;
+Button b_hangout;
+Button b_sleep;
+
+Button b_commons;
+Button b_library;
+Button b_dorm;
+Button b_RAC;
+
+
+
+
+int health = 100;
+float money = 150.00;
 
 
 void setup(){   //set the screen size
  size(1000,1000);
+ font = createFont("PixeloidMono-1G8ae.ttf",100);
+ textFont(font);
+ b_start = new Button (500,800,120,80,"Start",30,255,255,255,0);
+ b_commons =  new Button(300,200,10,10," ",23,255,0,0,0);
+ b_library =  new Button(800,600,10,10," ",23,255,0,0,0);
+ b_RAC =  new Button(450,300,10,10," ",23,255,0,0,0);
+ b_dorm = new Button(250,400,10,10," ",23,255,0,0,0);
+ }
+
  
-}
-
-
-PImage screen;
-
 
 void draw(){
 background(0);
 gameManager();
-HUDManager();
+drawHUD();
+b_start.Render();
+b_start.update();
+ 
 }
 
 
+
 void gameManager(){
-   //if the mouse is over the start button and button is pressed, game state is WORLD
+
+  if(b_start.isClicked()){
+  g_state = GameScreen.WORLD;
+  gameHasStarted = true;
+  b_start.setXPosition(-1000);
+  TimeSystem();
+  }
+  
+  
+  //if the mouse is over the start button and button is pressed, game state is WORLD
   // if game state is WORLD, the image in the center of the screen becomes the campus map
   // etc.....
   if(g_state == GameScreen.TITLE) {
       screen = loadImage("img_titleScreen.png");
-      image(screen,0.0,10.0);   
+      image(screen,0.0,10.0);
+      
    }
   if(g_state == GameScreen.WORLD) {
       screen = loadImage("img_WorldMap.png");
       image(screen,0.0,10.0);   
+      currentLocation = "MAP";
    }
    if(g_state == GameScreen.COMMONS) {
       screen = loadImage("img_Commons.png");
-      image(screen,0.0,-300.0);   
+      image(screen,0.0,-300.0); 
+      currentLocation = "COMMONS";
    }
   if(g_state == GameScreen.LIBRARY) {
       screen = loadImage("img_library.png");
       image(screen,0.0,10.0);   
+       currentLocation = "LIBRARY";  
+ }
+   
+   if(g_state == GameScreen.RAC){
+       screen = loadImage("img_RAC.png");
+      image(screen,0.0,10.0);  
+      currentLocation = "RAC";
    }
+   
+   
    if(g_state == GameScreen.DORMS) {
       screen = loadImage("img_dorms_bedroom.png");
       image(screen,200.0,200.0);   
    }
   
    if(g_state == GameScreen.RESULTS) {
-      screen = loadImage("img_Results");
+      screen = loadImage("img_Results.png");
       image(screen,0.0,10.0);   
    }
   
 }
 
 
+void TimeSystem(){
+   
+  thresh1Met = false;
+  thresh2Met = false;
+  thresh3Met = false;
+  
+  minutes++;
+  if(minutes>300 && !thresh1Met){
+    minutes = 0;
+    hours+=1;
+    thresh1Met = true;
+    }
+  
+  if(hours>5 && !thresh2Met){
+    hours = 0;
+    days+=1;
+    thresh2Met = true;
+  }
+
+
+  if(days>=7 && !thresh3Met){
+    week+=1;
+    thresh3Met = true;
+  }
+  
+
+  textSize(30);
+  text("Hours: " + str(hours) + " " + "Day: " + str(days)+" " + "Weeks: " + str(week),100,500);
+
+}
+
 void playerManager(){
 
 }
 
-void HUDManager(){
-//drawHUD();
+void drawHUD(){
+  
+  //display logistics
+  
+  int HUD_X = 230;
+  int hudWidth = 100;
+  int hudHeight = 50;
+  int text_size = 20;
+  int spacing = 120;
+  int HUD_Y = 850;
+  
+  //button instantiations
+  //Button ( x position, y position , Width, Height , text , textSize , red , green , blue, textColor )
+  
+  b_study = new Button(HUD_X,HUD_Y,hudWidth,hudHeight,"Study",text_size,255,255,255,0);
+  b_eat = new Button(HUD_X+spacing,HUD_Y,hudWidth,hudHeight,"Eat",text_size,255,255,255,0);
+  b_sleep = new Button(HUD_X+2*spacing,HUD_Y,hudWidth,hudHeight,"Sleep",text_size,255,255,255,0);
+  b_hangout = new Button(HUD_X+3*spacing,HUD_Y,hudWidth,hudHeight,"Hangout",text_size,255,255,255,0);
+  b_back = new Button(100,450,hudWidth,hudHeight,"Back",text_size,255,255,255,0);
+  
+  
+  
+ //instantiate buttons for location
+ 
+ 
+  if(gameHasStarted){
+  //draw HUD sprite
+   HUD_image = loadImage("img_HUD.png");
+  image(HUD_image,0,0);
+  
+  //draws player options
+  b_study.Render();
+  b_study.update();
+  b_eat.Render();
+  b_eat.update();
+  b_sleep.Render();
+  b_sleep.update();
+  b_hangout.Render();
+  b_hangout.update();
+  b_back.Render();
+  b_back.update();
+  
+ //draw locations
+ 
+ b_commons.Render();
+ b_commons.update();
+ b_library.Render();
+ b_library.update();
+ b_dorm.Render();
+ b_dorm.update();
+ b_RAC.Render();
+ b_RAC.update();
+ 
+ 
+ fill(0);
+ rect(100,200,100,400); 
+ fill(255);
+ text("STATS:-\n-----\n" + " Health:"+str(health) +"%" +"\n"+ "Money:" + "$" +str(money),100,300);
+  
+  }
 
+//if any of the buttons is clicked, set the x of all of them to -1000
+if(b_commons.isClicked() || b_library.isClicked() || b_dorm.isClicked() || b_RAC.isClicked()){
+
+  b_commons.setXPosition(-1000);
+  b_library.setXPosition(-1000);
+  b_dorm.setXPosition(-1000);
+  b_RAC.setXPosition(-1000);
+  println(b_library.Pos.x);
 }
+if(b_commons.isClicked()){g_state = GameScreen.COMMONS;}
+if(b_library.isClicked()) {g_state = GameScreen.LIBRARY;} 
+if(b_dorm.isClicked()){g_state = GameScreen.LIBRARY;}
+if(b_RAC.isClicked()) {g_state = GameScreen.RAC;}
+if(b_back.isClicked()) {g_state = GameScreen.WORLD;}
+//notOnMap = true
+//if back is pressed, reset the buttons to original x pos
 
-void drawHUD() { //Mahad's drawLine() but modified
-  fill(0);
-  stroke(255);
-  rect(0,0,200,1000);
-  rect(width-200,0,200,1000); 
+
 }
